@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Extension manager",
+  "description": "Extension manager",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Open Extension Manager"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "scripting",
+    "management",
+    "storage"
+  ],
+  "icons": {
+    "16": "extension-manager.png",
+    "32": "extension-manager.png",
+    "48": "extension-manager.png",
+    "128": "extension-manager.png"
+  }
+}
