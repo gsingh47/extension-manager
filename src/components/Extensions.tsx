@@ -1,9 +1,10 @@
-import { Card, CardContent, Grid2, CardMedia, Switch, IconButton, Avatar, CardActions, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox, ListSubheader, Typography, Box } from "@mui/material";
+import { Card, CardContent, Grid2, CardMedia, Switch, IconButton, Avatar, CardActions, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox, ListSubheader, Typography } from "@mui/material";
 import ExtensionIcon from "@mui/icons-material/Extension";
 import React from "react";
 import { ChromeActions, ChromeExtensionInfo, ChromeResponseMsg } from "../background/background";
 import { getIconUrl } from "../utils/getData-helper";
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import StarIcon from '@mui/icons-material/Star';
 import { CustomMenu } from "./toolbar/CustomMenu";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useExtensionsContext } from "../providers/ExtensionsContextProvider";
@@ -64,8 +65,13 @@ const ListViewItem: React.FC<ListViewItemProps> = ({ data, checked, onCheckboxCl
 export const ExtensionCard: React.FC<Props> = ({ data }) => {
   const { state, dispatch } = useExtensionsContext();
   const [enabled, setEnabled] = React.useState<boolean>(data.enabled);
+  const [isFavorite, setFavorite] = React.useState<boolean>()
   const { id, shortName } = data;
   const icon = getIconUrl(data.icons);
+
+  React.useEffect(() => {
+    setEnabled(data.enabled);
+  }, [data.enabled])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, isChecked: boolean) => {
     const extId = event.target.value;
@@ -76,14 +82,28 @@ export const ExtensionCard: React.FC<Props> = ({ data }) => {
       payload: {id: extId, isChecked}
     }).then(resp => {
         if (resp === ChromeResponseMsg.SUCCESS) {
-          console.log('response recieved')
           dispatch({type: ActionType.EXTENSION_UPDATED, payload: state.extensionUpdated + 1});
         }
       });
   };
 
   const handleFavClick = () => {
+    setFavorite(!isFavorite);
 
+    let updatedList: string[];
+
+    if (state.selectedTab === TABS.ALL) {
+      const { originalExtensionsOrder }  = state;
+      const updatedList = originalExtensionsOrder.map(ext => ext)
+
+    } else {
+
+    }
+
+    chrome.runtime.sendMessage({action: ChromeActions.SAVE_FAVORITE, payload: []})
+      .then(resp => {
+
+      });
   };
 
   const moreInfoIconButtonClick = (value: string) => {
@@ -91,7 +111,7 @@ export const ExtensionCard: React.FC<Props> = ({ data }) => {
       chrome.management.uninstall(id)
         .then(() => {
           const updatedGrps = state.createdGroupTabs.map(grp => {
-            const updatedList = grp.extensionIds.filter(extId => extId !== id);
+            const updatedList = grp.extensionIds.filter(ext => ext.id !== id);
             return {...grp, extensionIds: updatedList};
           });
 
@@ -139,7 +159,7 @@ export const ExtensionCard: React.FC<Props> = ({ data }) => {
       <CardActions sx={{ mt: 0, pt: 0 }}>
         <Grid2 display='flex' justifyContent='left' alignItems='center' size={6}>
           <IconButton aria-label="favorite" color='warning' onClick={handleFavClick}>
-            <StarOutlineIcon fontSize="small" />
+            {isFavorite ? <StarIcon fontSize="small" /> : <StarOutlineIcon fontSize="small" />}
           </IconButton>
         </Grid2>
         <Grid2 display='flex' justifyContent='right' alignItems='center' size={6}>
@@ -173,8 +193,8 @@ export const Extensions: React.FC = () => {
   const { state, dispatch } = useExtensionsContext();
   const { extensionsData, searchTerm } = state;
   const preSelectedExtIds = state.createdGroupTabs.find(
-    grp => grp.key === state.selectedGroupTabValue
-  )?.extensionIds;
+    grp => grp.key === state.selectedTab
+  )?.extensionIds.map(ext => ext.id);
 
   const hanldeListViewItemClick = (value: string) => {
     dispatch({type: ActionType.ADD_EXTENSION_TO_GRP, payload: value});
@@ -204,14 +224,14 @@ export const Extensions: React.FC = () => {
   );
 
   const allExtensionCards = (
-    state.selectedGroupTabValue === TABS.ALL ? (
-      state.originalExtensionsOrder.map(key => (
-        card(key, extensionsData[key])
+    state.selectedTab === TABS.ALL ? (
+      state.originalExtensionsOrder.map(ext => (
+        card(ext.id, extensionsData[ext.id])
       ))
     ) : (
-      state.createdGroupTabs.find((tab) => tab.key === state.selectedGroupTabValue)
-        ?.extensionIds.map(extId => (
-          card(extId, extensionsData[extId])
+      state.createdGroupTabs.find((tab) => tab.key === state.selectedTab)
+        ?.extensionIds.map(ext => (
+          card(ext.id, extensionsData[ext.id])
         ))
     )
   );

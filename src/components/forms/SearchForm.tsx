@@ -30,7 +30,7 @@ export const SearchForm: React.FC = () => {
     timerRef.current = setTimeout(() => {
       dispatch({type: ActionType.SEARCH, payload: event.target.value});
 
-      if (state.searchType == SEARCH_TYPE.EXTENSION && state.selectedGroupTabValue !== TABS.ALL) {
+      if (state.searchType == SEARCH_TYPE.EXTENSION && state.selectedTab !== TABS.ALL) {
         dispatch({type: ActionType.UPDATE_GRP_TAB_VALUE, payload: TABS.ALL});
       }
     }, debounceTime);

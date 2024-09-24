@@ -13,7 +13,7 @@ export const TABS = {
 
 export const GroupingTabs: React.FC = () => {
   const {state, dispatch} = useExtensionsContext();
-  const { createdGroupTabs, selectedGroupTabValue, searchTerm } = state;
+  const { createdGroupTabs, selectedTab, searchTerm } = state;
 
   const isGroupSearch = state.searchType === SEARCH_TYPE.GROUP && searchTerm;
   const sudoTab = {key: TABS.ALL, name: TABS.ALL, extensionIds: []};
@@ -52,7 +52,7 @@ export const GroupingTabs: React.FC = () => {
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2, maxWidth: 382, bgcolor: 'background.paper' }}>
       <Tabs 
-        value={!state.processing ? selectedGroupTabValue : TABS.ALL} 
+        value={!state.processing ? selectedTab : TABS.ALL} 
         onChange={handleChange} 
         aria-label="Scrollable tabs"
         variant="scrollable"

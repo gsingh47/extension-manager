@@ -1,4 +1,4 @@
-import { ExtensionsDataType, GroupTab } from "./reducers";
+import { ExtensionIdWithFavType, ExtensionsDataType, GroupTab } from "./reducers";
 
 export enum ActionType {
   LOAD_EXTENSIONS_DATA = 'LOAD_EXTENSIONS_DATA',
@@ -89,7 +89,7 @@ export type ClearAddedExtensions = {
 
 export type AddNewExtensionsToOriginalOrder = {
   type: ActionType.ADD_NEW_EXTS_TO_ORIGINAL_ORDER;
-  payload: string[];
+  payload: ExtensionIdWithFavType[];
 };
 
 export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction | RemoveExtensionFromGrpAction | 

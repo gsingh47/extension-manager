@@ -7,10 +7,15 @@ export type ExtensionsDataType = {
   [key:string]: ChromeExtensionInfo
 };
 
+export type ExtensionIdWithFavType = {
+  id: string;
+  isFavorite: boolean;
+};
+
 export type GroupTab = {
   key: string;
   name: string;
-  extensionIds: string[];
+  extensionIds: ExtensionIdWithFavType[];
 };
 
 export type FavoriteExtensionsType = {
@@ -22,13 +27,13 @@ export type State = {
   favoriteExtensions: FavoriteExtensionsType;
   createdGroupTabs: GroupTab[];
   selectedExtensions: string[];
-  originalExtensionsOrder: string[];
+  originalExtensionsOrder: ExtensionIdWithFavType[];
   createNewGroup: boolean;
   editGroup: boolean;
   processing: boolean;
   storageUpdatedWithGroup: number;
   extensionUpdated: number;
-  selectedGroupTabValue: string;
+  selectedTab: string;
   searchTerm?: string;
   searchType: string;
 };
@@ -43,7 +48,7 @@ export const initState: State = {
   processing: false,
   storageUpdatedWithGroup: 0,
   extensionUpdated: 0,
-  selectedGroupTabValue: TABS.ALL,
+  selectedTab: TABS.ALL,
   searchType: SEARCH_TYPE.EXTENSION
 };
 
@@ -102,12 +107,12 @@ export const extensionsReducer = (state: State, action: ExtensionActions) => {
     case ActionType.EXTENSION_UPDATED:
       return {
         ...state,
-        storageUpdatedWithGroup: action.payload
+        extensionUpdated: action.payload
       };
     case ActionType.UPDATE_GRP_TAB_VALUE:
       return {
         ...state,
-        selectedGroupTabValue: action.payload
+        selectedTab: action.payload
       };
     case ActionType.CLEAR_ADDED_EXTENSIONS:
       return {

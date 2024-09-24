@@ -20,7 +20,9 @@ export const CreateGroupForm: React.FC = () => {
 
   const handleSaveClick = () => {
     const newGroupKey = uuidv4();
-    const newGroup: GroupTab = {key: newGroupKey, name: groupName, extensionIds: [...state.selectedExtensions]};
+    const newGroup: GroupTab = {key: newGroupKey, name: groupName, extensionIds: state.selectedExtensions.map(
+      extId => ({id: extId, isFavorite: false})
+    )};
     const newGroupsList = [...state.createdGroupTabs, newGroup];
     
     chrome.runtime.sendMessage({action: ChromeActions.SAVE_GROUP, payload: newGroupsList})
@@ -66,7 +68,7 @@ export const CreateGroupForm: React.FC = () => {
 
 export const EditGroupForm: React.FC = () => {
   const {state, dispatch} = useExtensionsContext();
-  const editIndex = state.createdGroupTabs.findIndex(grp => grp.key === state.selectedGroupTabValue);
+  const editIndex = state.createdGroupTabs.findIndex(grp => grp.key === state.selectedTab);
 
   if (editIndex < 0) {
     return null;
@@ -85,7 +87,8 @@ export const EditGroupForm: React.FC = () => {
 
   const handleSaveClick = () => {
     const updatedGroupsList = state.createdGroupTabs;
-    groupToEdit.extensionIds = state.selectedExtensions;
+    const prevExtsMap = new Map(groupToEdit.extensionIds.map(ext => [ext.id, ext.isFavorite]));
+    groupToEdit.extensionIds = state.selectedExtensions.map(id => ({id, isFavorite: prevExtsMap.get(id) ?? false}));
     groupToEdit.name = groupName;
     updatedGroupsList[editIndex] = groupToEdit;
 
