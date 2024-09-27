@@ -9,15 +9,13 @@ import { TABS } from '../tabs/Tabs';
 import { ChromeActions, ChromeResponseMsg, StorageKey } from '../../background/background';
 import { GroupTab, State } from '../../providers/reducers';
 
-const SortByMenuItemValue = {
+export const SortByMenuItemValue = {
   FAVORITE: 'favorite',
-  ASC: 'asc',
   STATUS: 'status'
 };
 
 const sortByMenuItems = [
-  {name: 'Favorite', value: SortByMenuItemValue.FAVORITE}, 
-  {name: 'A-Z', value: SortByMenuItemValue.ASC}, 
+  {name: 'Favorite', value: SortByMenuItemValue.FAVORITE},
   {name: 'Status', value: SortByMenuItemValue.STATUS}
 ];
 
@@ -71,7 +69,6 @@ export const ToolBar: React.FC = () => {
     } else {
       const currentGroup = state.createdGroupTabs.find(grp => grp.key === state.selectedTab);
       const extensionIds = currentGroup?.extensionIds.map(ext => ext.id);
-      console.log(currentGroup);
       extensionIds && enableOrDisableAll(extensionIds, !enableAll, dispatch, state.extensionUpdated + 1);
     }
 

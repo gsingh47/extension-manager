@@ -6,7 +6,6 @@ export enum ActionType {
   EDIT_GRP_CLICK = 'EDIT_GRP_CLICK',
   ADD_EXTENSION_TO_GRP = 'ADD_EXTENSION_TO_GRP',
   ADD_EXTENSIONS_TO_GRP = 'ADD_EXTENSIONS_TO_GRP',
-  REMOVE_EXTENSION_FROM_GRP = 'REMOVE_EXTENSION_FROM_GRP',
   PROCESSING = 'PROCESSING',
   SAVE = 'SAVE',
   SEARCH = 'SEARCH',
@@ -15,7 +14,8 @@ export enum ActionType {
   EXTENSION_UPDATED = 'EXTENSION_UPDATED',
   UPDATE_GRP_TAB_VALUE = 'UPDATE_GRP_TAB_VALUE',
   CLEAR_ADDED_EXTENSIONS = 'CLEAR_ADDED_EXTENSIONS',
-  ADD_NEW_EXTS_TO_ORIGINAL_ORDER = 'ADD_NEW_EXTS_TO_ORIGINAL_ORDER'
+  ADD_NEW_EXTS_TO_ORIGINAL_ORDER = 'ADD_NEW_EXTS_TO_ORIGINAL_ORDER',
+  SORT_BY = 'SORT_BY'
 };
 
 export type LoadExtensionsData = {
@@ -35,11 +35,6 @@ export type AddExtensionToGrpAction = {
 
 export type AddExtensionsToGrpAction = {
   type: ActionType.ADD_EXTENSIONS_TO_GRP;
-  payload: string[];
-};
-
-export type RemoveExtensionFromGrpAction = {
-  type: ActionType.REMOVE_EXTENSION_FROM_GRP;
   payload: string[];
 };
 
@@ -92,6 +87,11 @@ export type AddNewExtensionsToOriginalOrder = {
   payload: ExtensionIdWithFavType[];
 };
 
-export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction | RemoveExtensionFromGrpAction | 
+export type SortBy = {
+  type: ActionType.SORT_BY,
+  payload: string
+};
+
+export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction | 
   SaveGroup | StorageUpdatedWithGroupAction | LoadExtensionsData | UpdateGroupTabValue | ClearAddedExtensions | Processing |
-  EditGroup | Search | ChangeSearchType | ExtenionUpdatedAction | AddNewExtensionsToOriginalOrder;
+  EditGroup | Search | ChangeSearchType | ExtenionUpdatedAction | AddNewExtensionsToOriginalOrder | SortBy;

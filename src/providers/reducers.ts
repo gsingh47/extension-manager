@@ -1,6 +1,7 @@
 import { ChromeExtensionInfo } from "../background/background";
 import { SEARCH_TYPE } from "../components/forms/SearchForm";
 import { TABS } from "../components/tabs/Tabs";
+import { SortByMenuItemValue } from "../components/toolbar/ToolBar";
 import { ExtensionActions, ActionType } from "./actions";
 
 export type ExtensionsDataType = {
@@ -18,13 +19,8 @@ export type GroupTab = {
   extensionIds: ExtensionIdWithFavType[];
 };
 
-export type FavoriteExtensionsType = {
-  [key:string]: string;
-};
-
 export type State = {
   extensionsData?: ExtensionsDataType;
-  favoriteExtensions: FavoriteExtensionsType;
   createdGroupTabs: GroupTab[];
   selectedExtensions: string[];
   originalExtensionsOrder: ExtensionIdWithFavType[];
@@ -36,20 +32,21 @@ export type State = {
   selectedTab: string;
   searchTerm?: string;
   searchType: string;
+  sortBy: string;
 };
 
 export const initState: State = {
   createdGroupTabs: [],
   selectedExtensions: [],
   originalExtensionsOrder: [],
-  favoriteExtensions: {},
   createNewGroup: false,
   editGroup: false,
   processing: false,
   storageUpdatedWithGroup: 0,
   extensionUpdated: 0,
   selectedTab: TABS.ALL,
-  searchType: SEARCH_TYPE.EXTENSION
+  searchType: SEARCH_TYPE.EXTENSION,
+  sortBy: SortByMenuItemValue.FAVORITE
 };
 
 export const extensionsReducer = (state: State, action: ExtensionActions) => {
@@ -133,7 +130,12 @@ export const extensionsReducer = (state: State, action: ExtensionActions) => {
       return {
         ...state,
         originalExtensionsOrder: action.payload
-      } ; 
+      };
+    case ActionType.SORT_BY:
+      return {
+        ...state,
+        sortBy: action.payload
+      };
     default: 
       return state;
   }

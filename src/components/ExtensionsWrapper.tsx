@@ -42,7 +42,7 @@ export const ExtensionsWrapper: React.FC = () => {
               dispatch({type: ActionType.ADD_NEW_EXTS_TO_ORIGINAL_ORDER, payload: [...originalExtsOrder, ...unMatchedExts]});
 
             } else if (unMatchedExts) {
-              const updatedList = [...originalExtsOrder, ...unMatchedExts];
+              const updatedList = [...state.originalExtensionsOrder, ...unMatchedExts];
               dispatch({type: ActionType.ADD_NEW_EXTS_TO_ORIGINAL_ORDER, payload: updatedList});
               chrome.runtime.sendMessage({action: ChromeActions.ADD_EXTS_TO_ORIGINAL_ORDER, paylod: updatedList});
             }

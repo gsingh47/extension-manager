@@ -1,3 +1,5 @@
+import { ExtensionIdWithFavType } from "../providers/reducers";
+
 export const StorageKey = {
   EXTENSIONS: 'extensions',
   ORIGINAL_EXTENSIONS_ORDER: 'originalExtensionsOrder',
@@ -8,8 +10,7 @@ export enum ChromeActions {
   SAVE_GROUP = 'SAVE_GROUP',
   EXTENSION_SWITCH_STATE_CHANGE = 'EXTENSION_SWITCH_STATE_CHANGE',
   ADD_EXTS_TO_ORIGINAL_ORDER = 'ADD_EXTS_TO_ORIGINAL_ORDER',
-  ENABLE_DISABLE_ALL = 'ENABLE_DISABLE_ALL',
-  SAVE_FAVORITE = 'SAVE_FAVORITE'
+  ENABLE_DISABLE_ALL = 'ENABLE_DISABLE_ALL'
 };
 
 export enum ChromeResponseMsg {
@@ -39,25 +40,24 @@ type EnableDisableAll = {
 
 type AddExtsToOriginalOrder = {
   action: ChromeActions.ADD_EXTS_TO_ORIGINAL_ORDER;
-  payload: string[];
+  payload: ExtensionIdWithFavType[];
 };
 
-type SaveFavorite = {
-  action: ChromeActions.SAVE_FAVORITE;
-  payload: string[];
-};
-
-type Actions = SaveGroupAction | ExtensionSwitchAction | AddExtsToOriginalOrder | EnableDisableAll | SaveFavorite;
+type Actions = SaveGroupAction | ExtensionSwitchAction | AddExtsToOriginalOrder | EnableDisableAll;
 
 export type ChromeExtensionInfo = chrome.management.ExtensionInfo;
 
 export const extensionToExclude = 'okldldeojendbhajegfgphmdhmfjlkka';
 
 chrome.runtime.onInstalled.addListener((details) => {
-  chrome.management.getAll().then(extensions => {
-    const originalExtensionsOrder = extensions.filter(ext => ext.id !== extensionToExclude).map(ext => (ext.id));
-    chrome.storage.local.set({[StorageKey.ORIGINAL_EXTENSIONS_ORDER]: originalExtensionsOrder});
-  });
+  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    chrome.management.getAll().then(extensions => {
+      const originalExtensionsOrder: ExtensionIdWithFavType[] = extensions.filter(
+        ext => ext.id !== extensionToExclude
+      ).map(ext => ({id: ext.id, isFavorite: false}));
+      chrome.storage.local.set({[StorageKey.ORIGINAL_EXTENSIONS_ORDER]: originalExtensionsOrder});
+    });
+  }
 });
 
 chrome.runtime.onMessage.addListener((msg: Actions, _, sendResponse) => {
@@ -78,10 +78,6 @@ chrome.runtime.onMessage.addListener((msg: Actions, _, sendResponse) => {
     sendResponse(ChromeResponseMsg.SUCCESS);
 
   } else if (action === ChromeActions.ADD_EXTS_TO_ORIGINAL_ORDER) {
-    chrome.storage.local.set({[StorageKey.ORIGINAL_EXTENSIONS_ORDER]: payload});
-    sendResponse(ChromeResponseMsg.SUCCESS);
-
-  } else if (action === ChromeActions.SAVE_FAVORITE) {
     chrome.storage.local.set({[StorageKey.ORIGINAL_EXTENSIONS_ORDER]: payload});
     sendResponse(ChromeResponseMsg.SUCCESS);
   }
