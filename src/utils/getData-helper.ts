@@ -1,31 +1,50 @@
-import React from 'react';
-import { ExtensionIdWithFavType } from "../providers/reducers";
+import { FavoriteExtensions } from "../providers/reducers";
 
 export const getIconUrl = (icons: chrome.management.IconInfo[] | undefined): string | undefined => {
   return (icons && icons.length) ? icons[icons.length - 1].url : undefined;
 };
 
-export const getUpdatedListWithFavExtensions = (
-  extsWithFavs: ExtensionIdWithFavType[], 
+export const getUpdatedListWithFavExtensionsV2 = (
+  favoriteExts: FavoriteExtensions,
   extId: string, 
-  isFavorite: boolean
-): ExtensionIdWithFavType[] => {
-  const indexToRemove = extsWithFavs.findIndex(ext => ext.id === extId);
+  isFavorite: boolean,
+  grpId?: string
+): FavoriteExtensions => {
+  if (isFavorite) {
+    if (grpId) {
+      const favExts = favoriteExts[grpId];
 
-  if (~indexToRemove) {
-    extsWithFavs.splice(indexToRemove, 1);
-    const nextAvailIndex = extsWithFavs.findIndex(ext => !ext.isFavorite);
+      if (!favExts) {
+        favoriteExts[grpId] = {[extId]: extId};
 
-    if (~nextAvailIndex) {
-      extsWithFavs.splice(nextAvailIndex, 0, {id: extId, isFavorite});
+      } else if (typeof favExts === 'object') {
+        favExts[extId] = extId;
+        favoriteExts[grpId] = favExts;
+      } 
     } else {
-      extsWithFavs.push({id: extId, isFavorite});
+      favoriteExts[extId] = extId;
+    }
+  } else {
+    if (extId in favoriteExts) {
+      delete favoriteExts[extId];
+
+    } else if (grpId in favoriteExts) {
+      const favExts = favoriteExts[grpId];
+      
+      if (typeof favExts === 'object' && (extId in favExts)) {
+        delete favExts[extId];
+        favoriteExts[grpId] = favExts;
+      }
     }
   }
-
-  return extsWithFavs;
+  
+  return favoriteExts;
 };
 
-export const getFavExtsMap = (exts: ExtensionIdWithFavType[]) => {
-  return new Map(exts.map(ext => [ext.id, ext.isFavorite]));
+export const isFavorite = (groupId: string, extId: string, favorites: FavoriteExtensions): boolean => {
+  if (groupId in favorites) {
+    const favExts = favorites[groupId];
+    return typeof favExts === 'object' && extId in favExts;
+  }
+  return false;
 };

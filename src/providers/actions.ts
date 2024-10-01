@@ -1,4 +1,4 @@
-import { ExtensionIdWithFavType, ExtensionsDataType, GroupTab } from "./reducers";
+import { ExtensionsDataType, FavoriteExtensions, GroupTab } from "./reducers";
 
 export enum ActionType {
   LOAD_EXTENSIONS_DATA = 'LOAD_EXTENSIONS_DATA',
@@ -11,10 +11,12 @@ export enum ActionType {
   SEARCH = 'SEARCH',
   CHANGE_SEARCH_TYPE = 'CHANGE_SEARCH_TYPE',
   STORAGE_UPDATED_WITH_GRP = 'STORAGE_UPDATED_WITH_GRP',
+  STORAGE_UPDATED_WITH_FAV = 'STORAGE_UPDATED_WITH_FAV',
   EXTENSION_UPDATED = 'EXTENSION_UPDATED',
   UPDATE_GRP_TAB_VALUE = 'UPDATE_GRP_TAB_VALUE',
   CLEAR_ADDED_EXTENSIONS = 'CLEAR_ADDED_EXTENSIONS',
-  ADD_NEW_EXTS_TO_ORIGINAL_ORDER = 'ADD_NEW_EXTS_TO_ORIGINAL_ORDER',
+  MARK_FAVORITE_EXTENSIONS = 'FAVORITE_EXTENSIONS',
+  EXTENSIONS_ORIGINAL_ORDER = 'EXTENSIONS_ORIGINAL_ORDER',
   SORT_BY = 'SORT_BY'
 };
 
@@ -26,6 +28,16 @@ export type LoadExtensionsData = {
 export type CreateGroupClickAction = {
   type: ActionType.CREATE_GRP_CLICK;
   payload: boolean;
+};
+
+export type ExtensionsOriginalOrder = {
+  type: ActionType.EXTENSIONS_ORIGINAL_ORDER;
+  payload: string[];
+};
+
+export type MarkFavoriteExtensions = {
+  type: ActionType.MARK_FAVORITE_EXTENSIONS;
+  payload: FavoriteExtensions;
 };
 
 export type AddExtensionToGrpAction = {
@@ -65,12 +77,14 @@ export type ChangeSearchType = {
 
 export type StorageUpdatedWithGroupAction = {
   type: ActionType.STORAGE_UPDATED_WITH_GRP;
-  payload: number;
+};
+
+export type StorageUpdatedWithFavorite = {
+  type: ActionType.STORAGE_UPDATED_WITH_FAV;
 };
 
 export type ExtenionUpdatedAction = {
   type: ActionType.EXTENSION_UPDATED;
-  payload: number;
 };
 
 export type UpdateGroupTabValue = {
@@ -82,16 +96,12 @@ export type ClearAddedExtensions = {
   type: ActionType.CLEAR_ADDED_EXTENSIONS;
 };
 
-export type AddNewExtensionsToOriginalOrder = {
-  type: ActionType.ADD_NEW_EXTS_TO_ORIGINAL_ORDER;
-  payload: ExtensionIdWithFavType[];
-};
-
 export type SortBy = {
   type: ActionType.SORT_BY,
   payload: string
 };
 
-export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction | 
+export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction | ExtensionsOriginalOrder |
   SaveGroup | StorageUpdatedWithGroupAction | LoadExtensionsData | UpdateGroupTabValue | ClearAddedExtensions | Processing |
-  EditGroup | Search | ChangeSearchType | ExtenionUpdatedAction | AddNewExtensionsToOriginalOrder | SortBy;
+  EditGroup | Search | ChangeSearchType | ExtenionUpdatedAction | SortBy | MarkFavoriteExtensions |
+  StorageUpdatedWithFavorite;

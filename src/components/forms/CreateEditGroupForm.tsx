@@ -20,15 +20,13 @@ export const CreateGroupForm: React.FC = () => {
 
   const handleSaveClick = () => {
     const newGroupKey = uuidv4();
-    const newGroup: GroupTab = {key: newGroupKey, name: groupName, extensionIds: state.selectedExtensions.map(
-      extId => ({id: extId, isFavorite: false})
-    )};
+    const newGroup: GroupTab = {key: newGroupKey, name: groupName, extensionIds: state.selectedExtensions};
     const newGroupsList = [...state.createdGroupTabs, newGroup];
     
     chrome.runtime.sendMessage({action: ChromeActions.SAVE_GROUP, payload: newGroupsList})
       .then(resp => {
         if (resp === ChromeResponseMsg.SUCCESS) {
-          dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP, payload: state.storageUpdatedWithGroup + 1});
+          dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP});
           dispatch({type: ActionType.UPDATE_GRP_TAB_VALUE, payload: newGroupKey});
           dispatch({type: ActionType.CLEAR_ADDED_EXTENSIONS});
           dispatch({type: ActionType.PROCESSING, payload: true});
@@ -87,15 +85,14 @@ export const EditGroupForm: React.FC = () => {
 
   const handleSaveClick = () => {
     const updatedGroupsList = state.createdGroupTabs;
-    const prevExtsMap = new Map(groupToEdit.extensionIds.map(ext => [ext.id, ext.isFavorite]));
-    groupToEdit.extensionIds = state.selectedExtensions.map(id => ({id, isFavorite: prevExtsMap.get(id) ?? false}));
+    groupToEdit.extensionIds = state.selectedExtensions;
     groupToEdit.name = groupName;
     updatedGroupsList[editIndex] = groupToEdit;
 
     chrome.runtime.sendMessage({action: ChromeActions.SAVE_GROUP, payload: updatedGroupsList})
       .then(resp => {
         if (resp === ChromeResponseMsg.SUCCESS) {
-          dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP, payload: state.storageUpdatedWithGroup + 1});
+          dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP});
           dispatch({type: ActionType.EDIT_GRP_CLICK, payload: false});
           dispatch({type: ActionType.CLEAR_ADDED_EXTENSIONS});
         }

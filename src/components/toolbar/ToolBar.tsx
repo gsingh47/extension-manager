@@ -35,18 +35,18 @@ const enableOrDisableAll = (
       payload: {ids, isChecked: enableAll}
     }).then(resp => {
         if (resp === ChromeResponseMsg.SUCCESS) {
-          dispatch({type: ActionType.EXTENSION_UPDATED, payload: extensionUpdated});
+          dispatch({type: ActionType.EXTENSION_UPDATED});
         }
       });
 };
 
 const defaultState = (state: State): boolean => {
-  const { originalExtensionsOrder, createdGroupTabs, selectedTab, extensionsData } = state;
-  const extensionIds = selectedTab === TABS.ALL ? originalExtensionsOrder :
+  const { extensionsOriginalOrder, createdGroupTabs, selectedTab, extensionsData } = state;
+  const extensionIds = selectedTab === TABS.ALL ? extensionsOriginalOrder :
     createdGroupTabs.find(grp => grp.key === selectedTab)?.extensionIds;
 
   if (extensionsData && extensionIds) {
-    const anyDisabled = extensionIds.map(ext => extensionsData[ext.id]?.enabled).filter(enabled => !enabled);
+    const anyDisabled = extensionIds.map(extId => extensionsData[extId]?.enabled).filter(enabled => !enabled);
     return anyDisabled.length === 0 ? true : false;
   }  
 
@@ -59,19 +59,17 @@ export const ToolBar: React.FC = () => {
 
   React.useEffect(() => {
     setEnableAll(defaultState(state))
-  }, [state.originalExtensionsOrder, state.createdGroupTabs, state.selectedTab, state.extensionsData]);
+  }, [state.extensionsOriginalOrder, state.createdGroupTabs, state.selectedTab, state.extensionsData]);
 
   const handleEnableAllClick = () => {
     if (state.selectedTab === TABS.ALL) {
-      const exts = state.originalExtensionsOrder.map(ext => ext.id);
-      enableOrDisableAll(exts, !enableAll, dispatch, state.extensionUpdated + 1);
+      enableOrDisableAll(state.extensionsOriginalOrder, !enableAll, dispatch, state.extensionUpdated + 1);
 
     } else {
       const currentGroup = state.createdGroupTabs.find(grp => grp.key === state.selectedTab);
-      const extensionIds = currentGroup?.extensionIds.map(ext => ext.id);
+      const extensionIds = currentGroup?.extensionIds;
       extensionIds && enableOrDisableAll(extensionIds, !enableAll, dispatch, state.extensionUpdated + 1);
     }
-
     setEnableAll(!enableAll);
   };
 
@@ -81,7 +79,7 @@ export const ToolBar: React.FC = () => {
     chrome.storage.local.get(StorageKey.GROUPS)
       .then((resp) => {
         const groupToEdit: GroupTab = resp.groups && resp.groups.find((grp: GroupTab) => grp.key === state.selectedTab);
-        groupToEdit && dispatch({type: ActionType.ADD_EXTENSIONS_TO_GRP, payload: groupToEdit.extensionIds.map(ext => ext.id)});
+        groupToEdit && dispatch({type: ActionType.ADD_EXTENSIONS_TO_GRP, payload: groupToEdit.extensionIds.map(extId => extId)});
       });
   };
 
@@ -90,7 +88,7 @@ export const ToolBar: React.FC = () => {
     chrome.runtime.sendMessage({action: ChromeActions.SAVE_GROUP, payload: updatedGroupTabs})
       .then(resp => {
         if (resp === ChromeResponseMsg.SUCCESS) {
-          dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP, payload: state.storageUpdatedWithGroup + 1});
+          dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP});
           dispatch({type: ActionType.EDIT_GRP_CLICK, payload: false});
           dispatch({type: ActionType.UPDATE_GRP_TAB_VALUE, payload: TABS.ALL});
           dispatch({type: ActionType.CLEAR_ADDED_EXTENSIONS});
@@ -99,7 +97,11 @@ export const ToolBar: React.FC = () => {
   };
 
   const handleSortMenuItemClick = (value: string) => {
-    
+    if (state.sortBy !== value) {
+      if (value === SortByMenuItemValue.STATUS) {
+        
+      }
+    }
   };
 
   const mainItems = !state.createNewGroup && (

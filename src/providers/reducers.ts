@@ -8,26 +8,31 @@ export type ExtensionsDataType = {
   [key:string]: ChromeExtensionInfo
 };
 
-export type ExtensionIdWithFavType = {
-  id: string;
-  isFavorite: boolean;
+export type FavoriteExtension = {
+  [key: string]: string;
+};
+
+export type FavoriteExtensions = {
+  [key: string]: FavoriteExtension | string | undefined;
 };
 
 export type GroupTab = {
   key: string;
   name: string;
-  extensionIds: ExtensionIdWithFavType[];
+  extensionIds: string[];
 };
 
 export type State = {
   extensionsData?: ExtensionsDataType;
   createdGroupTabs: GroupTab[];
   selectedExtensions: string[];
-  originalExtensionsOrder: ExtensionIdWithFavType[];
+  extensionsOriginalOrder: string[];
+  favoriteExts: FavoriteExtensions;
   createNewGroup: boolean;
   editGroup: boolean;
   processing: boolean;
   storageUpdatedWithGroup: number;
+  storageUpdatedWithFav: number;
   extensionUpdated: number;
   selectedTab: string;
   searchTerm?: string;
@@ -38,11 +43,13 @@ export type State = {
 export const initState: State = {
   createdGroupTabs: [],
   selectedExtensions: [],
-  originalExtensionsOrder: [],
+  extensionsOriginalOrder: [],
+  favoriteExts: {},
   createNewGroup: false,
   editGroup: false,
   processing: false,
   storageUpdatedWithGroup: 0,
+  storageUpdatedWithFav: 0,
   extensionUpdated: 0,
   selectedTab: TABS.ALL,
   searchType: SEARCH_TYPE.EXTENSION,
@@ -99,12 +106,17 @@ export const extensionsReducer = (state: State, action: ExtensionActions) => {
     case ActionType.STORAGE_UPDATED_WITH_GRP:
       return {
         ...state,
-        storageUpdatedWithGroup: action.payload
+        storageUpdatedWithGroup: state.storageUpdatedWithGroup + 1
+      };
+    case ActionType.STORAGE_UPDATED_WITH_FAV:
+      return {
+        ...state,
+        storageUpdatedWithFav: state.storageUpdatedWithFav + 1
       };
     case ActionType.EXTENSION_UPDATED:
       return {
         ...state,
-        extensionUpdated: action.payload
+        extensionUpdated: state.extensionUpdated + 1
       };
     case ActionType.UPDATE_GRP_TAB_VALUE:
       return {
@@ -126,10 +138,15 @@ export const extensionsReducer = (state: State, action: ExtensionActions) => {
         ...state,
         searchType: action.payload
       };
-    case ActionType.ADD_NEW_EXTS_TO_ORIGINAL_ORDER:
+    case ActionType.EXTENSIONS_ORIGINAL_ORDER:
       return {
         ...state,
-        originalExtensionsOrder: action.payload
+        extensionsOriginalOrder: action.payload
+      };
+    case ActionType.MARK_FAVORITE_EXTENSIONS:
+      return {
+        ...state,
+        favoriteExts: action.payload
       };
     case ActionType.SORT_BY:
       return {
