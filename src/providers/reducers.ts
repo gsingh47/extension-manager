@@ -13,7 +13,7 @@ export type FavoriteExtension = {
 };
 
 export type FavoriteExtensions = {
-  [key: string]: FavoriteExtension | string | undefined;
+  [key: string]: FavoriteExtensions | string | undefined;
 };
 
 export type GroupTab = {

@@ -11,6 +11,7 @@ import { CreateEditGroupForm } from './forms/CreateEditGroupForm';
 import { useExtensionsContext } from '../providers/ExtensionsContextProvider';
 import { ActionType } from '../providers/actions';
 import { ExtensionsDataType, FavoriteExtensions } from '../providers/reducers';
+import { Top } from './top/Top';
 
 export const ExtensionsWrapper: React.FC = () => {
   const { state, dispatch } = useExtensionsContext();
@@ -20,11 +21,9 @@ export const ExtensionsWrapper: React.FC = () => {
       if (extensions.length) {
         const mappedData: ExtensionsDataType = {};
         const refinedExts = extensions.filter(ext => ext.id !== extensionToExclude);
-        const ids = refinedExts.map(ext => ext.id);
 
         refinedExts.forEach((ext: ChromeExtensionInfo) => (mappedData[ext.id] = ext));
         
-        dispatch({type: ActionType.EXTENSIONS_ORIGINAL_ORDER, payload: ids});
         dispatch({type: ActionType.LOAD_EXTENSIONS_DATA, payload: mappedData});
       }
     });
@@ -40,15 +39,7 @@ export const ExtensionsWrapper: React.FC = () => {
   
   return (
     <Box sx={{ m: 1 }} component={'section'}>
-      <Stack sx={{ mb: 2 }} direction={'row'} spacing={1} justifyContent={'right'}>
-        <Fab color='info' aria-label='Chrome web store' size='small' variant='extended'>
-          <StoreIcon fontSize='small' />
-        </Fab>
-        <Fab color='default' aria-label='Dark mode switch' size='small' variant='extended'>
-          <DarkModeIcon fontSize='small' />
-          <Switch size='small' />
-        </Fab>
-      </Stack>
+      <Top />
       {(state.createNewGroup || state.editGroup) ? (
         <CreateEditGroupForm />
       ): (

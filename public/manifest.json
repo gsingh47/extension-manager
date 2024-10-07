@@ -13,7 +13,8 @@
   "permissions": [
     "scripting",
     "management",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "icons": {
     "16": "extension-manager.png",

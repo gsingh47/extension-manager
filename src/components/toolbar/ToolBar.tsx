@@ -1,4 +1,4 @@
-import { Box, Fab, Switch, Typography } from '@mui/material';
+import { Box, createTheme, Fab, Switch, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
@@ -8,6 +8,7 @@ import { ActionType, ExtensionActions } from '../../providers/actions';
 import { TABS } from '../tabs/Tabs';
 import { ChromeActions, ChromeResponseMsg, StorageKey } from '../../background/background';
 import { GroupTab, State } from '../../providers/reducers';
+import { useColorScheme } from '@mui/material/styles';
 
 export const SortByMenuItemValue = {
   FAVORITE: 'favorite',
@@ -24,11 +25,18 @@ const ToolBarText = {
   DISABLE_ALL: 'Disable All'
 };
 
+export const fabCustomCss = { 
+  backgroundColor: '#616161', 
+  color: 'white', 
+  '&:hover': { 
+    backgroundColor: '#616161' 
+  } 
+};
+
 const enableOrDisableAll = (
   ids: string[], 
   enableAll: boolean, 
-  dispatch: React.Dispatch<ExtensionActions>, 
-  extensionUpdated: number
+  dispatch: React.Dispatch<ExtensionActions>
 ) => {
     chrome.runtime.sendMessage({
       action: ChromeActions.ENABLE_DISABLE_ALL, 
@@ -41,8 +49,8 @@ const enableOrDisableAll = (
 };
 
 const defaultState = (state: State): boolean => {
-  const { extensionsOriginalOrder, createdGroupTabs, selectedTab, extensionsData } = state;
-  const extensionIds = selectedTab === TABS.ALL ? extensionsOriginalOrder :
+  const { createdGroupTabs, selectedTab, extensionsData } = state;
+  const extensionIds = selectedTab === TABS.ALL && extensionsData ? Object.keys(extensionsData) :
     createdGroupTabs.find(grp => grp.key === selectedTab)?.extensionIds;
 
   if (extensionsData && extensionIds) {
@@ -56,19 +64,20 @@ const defaultState = (state: State): boolean => {
 export const ToolBar: React.FC = () => {
   const {state, dispatch} = useExtensionsContext();
   const [enableAll, setEnableAll] = React.useState(defaultState(state));
+  const { mode } = useColorScheme();
 
   React.useEffect(() => {
     setEnableAll(defaultState(state))
-  }, [state.extensionsOriginalOrder, state.createdGroupTabs, state.selectedTab, state.extensionsData]);
+  }, [state.createdGroupTabs, state.selectedTab, state.extensionsData]);
 
   const handleEnableAllClick = () => {
     if (state.selectedTab === TABS.ALL) {
-      enableOrDisableAll(state.extensionsOriginalOrder, !enableAll, dispatch, state.extensionUpdated + 1);
+      enableOrDisableAll(Object.keys(state.extensionsData), !enableAll, dispatch);
 
     } else {
       const currentGroup = state.createdGroupTabs.find(grp => grp.key === state.selectedTab);
       const extensionIds = currentGroup?.extensionIds;
-      extensionIds && enableOrDisableAll(extensionIds, !enableAll, dispatch, state.extensionUpdated + 1);
+      extensionIds && enableOrDisableAll(extensionIds, !enableAll, dispatch);
     }
     setEnableAll(!enableAll);
   };
@@ -84,6 +93,12 @@ export const ToolBar: React.FC = () => {
   };
 
   const handleDeleteClick = () => {
+    const updatedFavs = state.favoriteExts;
+    delete updatedFavs[state.selectedTab];
+    
+    chrome.runtime.sendMessage({action: ChromeActions.MARK_FAVORITE_EXTENSIONS, payload: updatedFavs})
+      .then(resp => resp === ChromeResponseMsg.SUCCESS && dispatch({type: ActionType.STORAGE_UPDATED_WITH_FAV}));
+
     const updatedGroupTabs = state.createdGroupTabs.filter(grp => grp.key !== state.selectedTab);
     chrome.runtime.sendMessage({action: ChromeActions.SAVE_GROUP, payload: updatedGroupTabs})
       .then(resp => {
@@ -97,6 +112,7 @@ export const ToolBar: React.FC = () => {
   };
 
   const handleSortMenuItemClick = (value: string) => {
+    // TODO: not implemented yet
     if (state.sortBy !== value) {
       if (value === SortByMenuItemValue.STATUS) {
         
@@ -106,15 +122,15 @@ export const ToolBar: React.FC = () => {
 
   const mainItems = !state.createNewGroup && (
     <>
-      <Fab color='default' aria-label='Master switch' size='small' variant='extended' onClick={handleEnableAllClick}>
+      <Fab sx={mode === 'dark' && fabCustomCss} aria-label='Master switch' size='small' variant='extended' onClick={handleEnableAllClick}>
         <Switch checked={enableAll} size='small' />
         <Typography variant="caption">
           {enableAll ? ToolBarText.DISABLE_ALL : ToolBarText.ENABLE_ALL}
         </Typography>
       </Fab>
-      <CustomMenu menuItems={sortByMenuItems} onMenuItemClick={handleSortMenuItemClick} />
+      {/* <CustomMenu menuItems={sortByMenuItems} onMenuItemClick={handleSortMenuItemClick} /> */}
       {state.selectedTab !== TABS.ALL && (
-        <Fab color='default' aria-label='Edit' size='small' variant='extended' onClick={handleEditClick}>
+        <Fab sx={mode === 'dark' && fabCustomCss} aria-label='Edit' size='small' variant='extended' onClick={handleEditClick}>
           <EditIcon fontSize='small' color='primary' />
           <Typography variant="caption">
             Edit
@@ -127,7 +143,7 @@ export const ToolBar: React.FC = () => {
   return (
     <Box sx={{ '& > :not(style)': { mr: 1 } }}>
       {state.editGroup ? (
-        <Fab color='default' aria-label='Delete' size='small' variant='extended' onClick={handleDeleteClick}>
+        <Fab sx={mode === 'dark' && fabCustomCss} color='default' aria-label='Delete' size='small' variant='extended' onClick={handleDeleteClick}>
           <DeleteIcon fontSize='small' color='error' />
           <Typography variant="caption">
             Delete Group

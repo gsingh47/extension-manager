@@ -2,7 +2,7 @@ import { Card, CardContent, Grid2, CardMedia, Switch, IconButton, Avatar, CardAc
 import ExtensionIcon from "@mui/icons-material/Extension";
 import React from "react";
 import { ChromeActions, ChromeExtensionInfo, ChromeResponseMsg } from "../background/background";
-import { getIconUrl, getUpdatedListWithFavExtensionsV2, isFavorite } from "../utils/getData-helper";
+import { getIconUrl, getSortedExts, getSortedGrpExts, getUpdatedListWithFavExtensions, isFavorite } from "../utils/getData-helper";
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import StarIcon from '@mui/icons-material/Star';
 import { CustomMenu } from "./toolbar/CustomMenu";
@@ -88,9 +88,9 @@ export const ExtensionCard: React.FC<Props & {isFav?: boolean}> = ({ data, isFav
     let updatedFavs: FavoriteExtensions;
 
     if (state.selectedTab === TABS.ALL) {
-      updatedFavs = getUpdatedListWithFavExtensionsV2(state.favoriteExts, data.id, !isFavorite);
+      updatedFavs = getUpdatedListWithFavExtensions(state.favoriteExts, data.id, !isFavorite);
     } else {
-      updatedFavs = getUpdatedListWithFavExtensionsV2(state.favoriteExts, data.id, !isFavorite, state.selectedTab);
+      updatedFavs = getUpdatedListWithFavExtensions(state.favoriteExts, data.id, !isFavorite, state.selectedTab);
     }
 
     if (updatedFavs) {
@@ -219,12 +219,15 @@ export const Extensions: React.FC = () => {
 
   const allExtensionCards = (
     state.selectedTab === TABS.ALL ? (
-      state.extensionsOriginalOrder.map(extId => (
+      getSortedExts(state.extensionsData, state.favoriteExts).map(extId => (
         card(extId, extensionsData[extId], (extId in favoriteExts))
       ))
     ) : (
-      state.createdGroupTabs.find((tab) => tab.key === state.selectedTab)
-        ?.extensionIds.map(extId => (
+      getSortedGrpExts(
+        state.extensionsData,
+        state.favoriteExts,
+        state.createdGroupTabs.find((tab) => tab.key === state.selectedTab)
+      )?.map(extId => (
           card(extId, extensionsData[extId], isFavorite(state.selectedTab, extId, favoriteExts))
         ))
     )
@@ -240,7 +243,7 @@ export const Extensions: React.FC = () => {
       }
       sx={{ width: '100%', maxWidth: 360 }}
     >
-      {Object.keys(extensionsData).map((key, index) => (
+      {getSortedExts(extensionsData).map((key, index) => (
         <ListViewItem
           checked={preSelectedExtIds?.includes(key) ?? false}
           data={extensionsData[key]}
