@@ -30,11 +30,6 @@ export type CreateGroupClickAction = {
   payload: boolean;
 };
 
-export type ExtensionsOriginalOrder = {
-  type: ActionType.EXTENSIONS_ORIGINAL_ORDER;
-  payload: string[];
-};
-
 export type MarkFavoriteExtensions = {
   type: ActionType.MARK_FAVORITE_EXTENSIONS;
   payload: FavoriteExtensions;
@@ -101,7 +96,7 @@ export type SortBy = {
   payload: string
 };
 
-export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction | ExtensionsOriginalOrder |
+export type ExtensionActions = CreateGroupClickAction | AddExtensionToGrpAction | AddExtensionsToGrpAction |
   SaveGroup | StorageUpdatedWithGroupAction | LoadExtensionsData | UpdateGroupTabValue | ClearAddedExtensions | Processing |
   EditGroup | Search | ChangeSearchType | ExtenionUpdatedAction | SortBy | MarkFavoriteExtensions |
   StorageUpdatedWithFavorite;

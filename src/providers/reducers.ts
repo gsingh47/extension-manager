@@ -8,10 +8,6 @@ export type ExtensionsDataType = {
   [key:string]: ChromeExtensionInfo
 };
 
-export type FavoriteExtension = {
-  [key: string]: string;
-};
-
 export type FavoriteExtensions = {
   [key: string]: FavoriteExtensions | string | undefined;
 };
@@ -26,7 +22,6 @@ export type State = {
   extensionsData?: ExtensionsDataType;
   createdGroupTabs: GroupTab[];
   selectedExtensions: string[];
-  extensionsOriginalOrder: string[];
   favoriteExts: FavoriteExtensions;
   createNewGroup: boolean;
   editGroup: boolean;
@@ -43,7 +38,6 @@ export type State = {
 export const initState: State = {
   createdGroupTabs: [],
   selectedExtensions: [],
-  extensionsOriginalOrder: [],
   favoriteExts: {},
   createNewGroup: false,
   editGroup: false,
@@ -137,11 +131,6 @@ export const extensionsReducer = (state: State, action: ExtensionActions) => {
       return {
         ...state,
         searchType: action.payload
-      };
-    case ActionType.EXTENSIONS_ORIGINAL_ORDER:
-      return {
-        ...state,
-        extensionsOriginalOrder: action.payload
       };
     case ActionType.MARK_FAVORITE_EXTENSIONS:
       return {
