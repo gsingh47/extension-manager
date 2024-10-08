@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Extension manager",
+  "name": "Extension manager Beta",
   "description": "Extension manager by Softech",
   "version": "1.0.0",
   "action": {
@@ -11,7 +11,6 @@
     "service_worker": "background.js"
   },
   "permissions": [
-    "scripting",
     "management",
     "storage",
     "tabs"

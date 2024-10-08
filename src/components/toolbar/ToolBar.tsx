@@ -1,4 +1,4 @@
-import { Box, createTheme, Fab, Switch, Typography } from '@mui/material';
+import { Box, Fab, Switch, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
@@ -14,11 +14,6 @@ export const SortByMenuItemValue = {
   FAVORITE: 'favorite',
   STATUS: 'status'
 };
-
-const sortByMenuItems = [
-  {name: 'Favorite', value: SortByMenuItemValue.FAVORITE},
-  {name: 'Status', value: SortByMenuItemValue.STATUS}
-];
 
 const ToolBarText = {
   ENABLE_ALL: 'Enable All',
@@ -64,7 +59,16 @@ const defaultState = (state: State): boolean => {
 export const ToolBar: React.FC = () => {
   const {state, dispatch} = useExtensionsContext();
   const [enableAll, setEnableAll] = React.useState(defaultState(state));
-  const { mode } = useColorScheme();
+  const [colorScheme, setColorScheme] = React.useState('light');
+  const { mode, systemMode } = useColorScheme();
+
+  React.useEffect(() => {
+    if (mode === 'system') {
+      setColorScheme(systemMode);
+    } else {
+      setColorScheme(mode);
+    }
+  }, [mode, systemMode]);
 
   React.useEffect(() => {
     setEnableAll(defaultState(state))
@@ -111,26 +115,16 @@ export const ToolBar: React.FC = () => {
       });
   };
 
-  const handleSortMenuItemClick = (value: string) => {
-    // TODO: not implemented yet
-    if (state.sortBy !== value) {
-      if (value === SortByMenuItemValue.STATUS) {
-        
-      }
-    }
-  };
-
   const mainItems = !state.createNewGroup && (
     <>
-      <Fab sx={mode === 'dark' && fabCustomCss} aria-label='Master switch' size='small' variant='extended' onClick={handleEnableAllClick}>
+      <Fab sx={colorScheme === 'dark' ? fabCustomCss : {}} aria-label='Master switch' size='small' variant='extended' onClick={handleEnableAllClick}>
         <Switch checked={enableAll} size='small' />
         <Typography variant="caption">
           {enableAll ? ToolBarText.DISABLE_ALL : ToolBarText.ENABLE_ALL}
         </Typography>
       </Fab>
-      {/* <CustomMenu menuItems={sortByMenuItems} onMenuItemClick={handleSortMenuItemClick} /> */}
       {state.selectedTab !== TABS.ALL && (
-        <Fab sx={mode === 'dark' && fabCustomCss} aria-label='Edit' size='small' variant='extended' onClick={handleEditClick}>
+        <Fab sx={colorScheme === 'dark' ? fabCustomCss : {}} aria-label='Edit' size='small' variant='extended' onClick={handleEditClick}>
           <EditIcon fontSize='small' color='primary' />
           <Typography variant="caption">
             Edit
@@ -143,7 +137,7 @@ export const ToolBar: React.FC = () => {
   return (
     <Box sx={{ '& > :not(style)': { mr: 1 } }}>
       {state.editGroup ? (
-        <Fab sx={mode === 'dark' && fabCustomCss} color='default' aria-label='Delete' size='small' variant='extended' onClick={handleDeleteClick}>
+        <Fab sx={colorScheme === 'dark' ? fabCustomCss : {}} color='default' aria-label='Delete' size='small' variant='extended' onClick={handleDeleteClick}>
           <DeleteIcon fontSize='small' color='error' />
           <Typography variant="caption">
             Delete Group

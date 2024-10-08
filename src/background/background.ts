@@ -50,18 +50,6 @@ export type ChromeExtensionInfo = chrome.management.ExtensionInfo;
 
 export const extensionToExclude = 'okldldeojendbhajegfgphmdhmfjlkka';
 
-// TODO: remove ORIGINAL_EXTENSIONS_ORDER key and following listener if possible
-chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    chrome.management.getAll().then(extensions => {
-      const originalExtensionsOrder = extensions.filter(
-        ext => ext.id !== extensionToExclude
-      ).map(ext => ({id: ext.id, isFavorite: false}));
-      chrome.storage.local.set({[StorageKey.ORIGINAL_EXTENSIONS_ORDER]: originalExtensionsOrder});
-    });
-  }
-});
-
 chrome.runtime.onMessage.addListener((msg: Actions, _, sendResponse) => {
   const { action, payload } = msg;
 

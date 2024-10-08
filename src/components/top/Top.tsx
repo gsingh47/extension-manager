@@ -8,14 +8,23 @@ import { fabCustomCss } from '../toolbar/ToolBar';
 const CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/';
 
 export const Top: React.FC = () => {
-  const { mode, setMode } = useColorScheme();
+  const { mode, systemMode, setMode } = useColorScheme();
+  const [colorScheme, setColorScheme] = React.useState('light');
+
+  React.useEffect(() => {
+    if (mode === 'system') {
+      setColorScheme(systemMode);
+    } else {
+      setColorScheme(mode);
+    }
+  }, [mode, systemMode]);
 
   const openChromeStore = () => {
     chrome.tabs.create({url: CHROME_WEB_STORE_URL});
   };
 
   const toggleDarkMode = () => {
-    const turningDark = mode === 'light';
+    const turningDark = colorScheme === 'light';
     if (turningDark) { 
       setMode('dark');
     } else {
@@ -28,9 +37,9 @@ export const Top: React.FC = () => {
       <Fab color='info' aria-label='Chrome web store' size='small' variant='extended' onClick={openChromeStore}>
         <StoreIcon fontSize='small' />
       </Fab>
-      <Fab sx={mode === 'dark' && fabCustomCss} aria-label='Dark mode switch' size='small' variant='extended' onClick={toggleDarkMode}>
+      <Fab sx={colorScheme === 'dark' ? fabCustomCss : {}} aria-label='Dark mode switch' size='small' variant='extended' onClick={toggleDarkMode}>
         <DarkModeIcon fontSize='small' />
-        <Switch checked={mode === 'dark'} size='small' />
+        <Switch checked={colorScheme === 'dark'} size='small' />
       </Fab>
     </Stack>
   )
