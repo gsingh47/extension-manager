@@ -31,7 +31,7 @@ export const getSortedGrpExts = (
   grp?: GroupTab
 ): string[] | undefined => {
   if (grp && extsData) {
-    const selectGrpExtsData = grp.extensionIds.map(id => extsData[id]);
+    const selectGrpExtsData = grp.extensionIds.map(id => extsData[id]).filter(ext => ext);
     const favExtsByGrp = favorites[grp.key];
     
     return getSortedExts(selectGrpExtsData, (typeof favExtsByGrp === 'object' ? favExtsByGrp : undefined));
