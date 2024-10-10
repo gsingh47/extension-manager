@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Extension manager Beta",
-  "description": "Extension manager by Softech",
-  "version": "1.0.0",
+  "name": "Extension manager by SofTech",
+  "description": "Manage all your extensions in one place. By the SofTech.",
+  "version": "1.1.0",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Open Extension Manager"
@@ -12,8 +12,7 @@
   },
   "permissions": [
     "management",
-    "storage",
-    "tabs"
+    "storage"
   ],
   "icons": {
     "16": "extension-manager.png",

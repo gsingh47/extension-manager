@@ -1,10 +1,12 @@
-import { Box, Tab, Tabs } from '@mui/material';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import React from 'react';
 import { useExtensionsContext } from '../../providers/ExtensionsContextProvider';
 import { ActionType } from '../../providers/actions';
 import { StorageKey } from '../../background/background';
 import { SEARCH_TYPE } from '../forms/SearchForm';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 
 export const TABS = {
   ALL: 'ALL',
@@ -21,20 +23,6 @@ export const GroupingTabs: React.FC = () => {
     grp.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())
   );
 
-  const handleChange = (_: React.SyntheticEvent, value: any) => {
-    if (value === TABS.CREATE_NEW_GROUP) {
-      dispatch({type: ActionType.CREATE_GRP_CLICK, payload: true});
-    } else {
-      if (state.createNewGroup) {
-        dispatch({type: ActionType.CREATE_GRP_CLICK, payload: false});
-      }
-      if(state.editGroup) {
-        dispatch({type: ActionType.EDIT_GRP_CLICK, payload: false});
-      }
-    }
-    dispatch({type: ActionType.UPDATE_GRP_TAB_VALUE, payload: value});
-  };
-
   React.useEffect(() => {
     if (searchedGroupTab) {
       dispatch({type: ActionType.UPDATE_GRP_TAB_VALUE, payload: searchedGroupTab.key});
@@ -48,6 +36,20 @@ export const GroupingTabs: React.FC = () => {
         state.processing && dispatch({type: ActionType.PROCESSING, payload: false});
       });
   }, [state.storageUpdatedWithGroup]);
+
+  const handleChange = (_: React.SyntheticEvent, value: any) => {
+    if (value === TABS.CREATE_NEW_GROUP) {
+      dispatch({type: ActionType.CREATE_GRP_CLICK, payload: true});
+    } else {
+      if (state.createNewGroup) {
+        dispatch({type: ActionType.CREATE_GRP_CLICK, payload: false});
+      }
+      if(state.editGroup) {
+        dispatch({type: ActionType.EDIT_GRP_CLICK, payload: false});
+      }
+    }
+    dispatch({type: ActionType.UPDATE_GRP_TAB_VALUE, payload: value});
+  };
 
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2, maxWidth: 382, bgcolor: 'background.paper' }}>

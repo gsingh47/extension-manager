@@ -1,14 +1,16 @@
-import { Box, Fab, Switch, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
-import { CustomMenu } from './CustomMenu';
 import { useExtensionsContext } from '../../providers/ExtensionsContextProvider';
 import { ActionType, ExtensionActions } from '../../providers/actions';
 import { TABS } from '../tabs/Tabs';
 import { ChromeActions, ChromeResponseMsg, StorageKey } from '../../background/background';
 import { GroupTab, State } from '../../providers/reducers';
 import { useColorScheme } from '@mui/material/styles';
+import Fab from '@mui/material/Fab';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 export const SortByMenuItemValue = {
   FAVORITE: 'favorite',
@@ -28,6 +30,11 @@ export const fabCustomCss = {
   } 
 };
 
+type EnableAllDefaultState = {
+  enableAll: boolean;
+  disabled: boolean;
+};
+
 const enableOrDisableAll = (
   ids: string[], 
   enableAll: boolean, 
@@ -43,22 +50,26 @@ const enableOrDisableAll = (
       });
 };
 
-const defaultState = (state: State): boolean => {
+const defaultState = (state: State): EnableAllDefaultState => {
   const { createdGroupTabs, selectedTab, extensionsData } = state;
   const extensionIds = selectedTab === TABS.ALL && extensionsData ? Object.keys(extensionsData) :
     createdGroupTabs.find(grp => grp.key === selectedTab)?.extensionIds;
+  const enableAllState = {enableAll: false, disabled: false};
 
-  if (extensionsData && extensionIds) {
+  if (!extensionsData || !extensionIds.length) {
+    return {...enableAllState, disabled: true};
+  }
+  if (extensionsData) {
     const anyDisabled = extensionIds.map(extId => extensionsData[extId]?.enabled).filter(enabled => !enabled);
-    return anyDisabled.length === 0 ? true : false;
+    return anyDisabled.length === 0 ? {...enableAllState, enableAll: true} : enableAllState;
   }  
 
-  return false;
+  return enableAllState;
 };
 
 export const ToolBar: React.FC = () => {
   const {state, dispatch} = useExtensionsContext();
-  const [enableAll, setEnableAll] = React.useState(defaultState(state));
+  const [enableAllState, setEnableAllState] = React.useState(defaultState(state));
   const [colorScheme, setColorScheme] = React.useState('light');
   const { mode, systemMode } = useColorScheme();
 
@@ -71,19 +82,19 @@ export const ToolBar: React.FC = () => {
   }, [mode, systemMode]);
 
   React.useEffect(() => {
-    setEnableAll(defaultState(state))
+    setEnableAllState(defaultState(state))
   }, [state.createdGroupTabs, state.selectedTab, state.extensionsData]);
 
   const handleEnableAllClick = () => {
     if (state.selectedTab === TABS.ALL) {
-      enableOrDisableAll(Object.keys(state.extensionsData), !enableAll, dispatch);
+      enableOrDisableAll(Object.keys(state.extensionsData), !enableAllState.enableAll, dispatch);
 
     } else {
       const currentGroup = state.createdGroupTabs.find(grp => grp.key === state.selectedTab);
       const extensionIds = currentGroup?.extensionIds;
-      extensionIds && enableOrDisableAll(extensionIds, !enableAll, dispatch);
+      extensionIds && enableOrDisableAll(extensionIds, !enableAllState.enableAll, dispatch);
     }
-    setEnableAll(!enableAll);
+    setEnableAllState({...enableAllState, enableAll: !enableAllState.enableAll});
   };
 
   const handleEditClick = () => {
@@ -117,10 +128,10 @@ export const ToolBar: React.FC = () => {
 
   const mainItems = !state.createNewGroup && (
     <>
-      <Fab sx={colorScheme === 'dark' ? fabCustomCss : {}} aria-label='Master switch' size='small' variant='extended' onClick={handleEnableAllClick}>
-        <Switch checked={enableAll} size='small' />
+      <Fab disabled={enableAllState.disabled} sx={colorScheme === 'dark' ? fabCustomCss : {}} aria-label='Master switch' size='small' variant='extended' onClick={handleEnableAllClick}>
+        <Switch checked={enableAllState.enableAll} size='small' />
         <Typography variant="caption">
-          {enableAll ? ToolBarText.DISABLE_ALL : ToolBarText.ENABLE_ALL}
+          {enableAllState.enableAll ? ToolBarText.DISABLE_ALL : ToolBarText.ENABLE_ALL}
         </Typography>
       </Fab>
       {state.selectedTab !== TABS.ALL && (

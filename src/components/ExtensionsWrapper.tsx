@@ -1,12 +1,11 @@
-import { Box, Fab, Grid2, Stack, Switch } from '@mui/material';
 import React from 'react';
-import { ChromeExtensionInfo, extensionToExclude, StorageKey } from '../background/background';
+import Box from '@mui/material/Box';
+import Grid2 from '@mui/material/Grid2';
+import { ChromeExtensionInfo, extensionsToExclude, StorageKey } from '../background/background';
 import { Extensions } from './Extensions';
 import { ToolBar } from './toolbar/ToolBar';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import StoreIcon from '@mui/icons-material/Store';
 import { GroupingTabs } from './tabs/Tabs';
-import { SearchForm } from './forms/SearchForm';
+import { SEARCH_TYPE, SearchForm } from './forms/SearchForm';
 import { CreateEditGroupForm } from './forms/CreateEditGroupForm';
 import { useExtensionsContext } from '../providers/ExtensionsContextProvider';
 import { ActionType } from '../providers/actions';
@@ -20,7 +19,7 @@ export const ExtensionsWrapper: React.FC = () => {
     chrome.management.getAll().then(extensions => {
       if (extensions.length) {
         const mappedData: ExtensionsDataType = {};
-        const refinedExts = extensions.filter(ext => ext.id !== extensionToExclude);
+        const refinedExts = extensions.filter(ext => (ext.type === 'extension' && !(ext.id in extensionsToExclude)));
 
         refinedExts.forEach((ext: ChromeExtensionInfo) => (mappedData[ext.id] = ext));
         
@@ -46,7 +45,7 @@ export const ExtensionsWrapper: React.FC = () => {
         <SearchForm />
       )}
       <GroupingTabs />
-      {!state.createNewGroup && !state.searchTerm && (
+      {!state.createNewGroup && (!state.searchTerm || (state.searchTerm && state.searchType === SEARCH_TYPE.GROUP)) && (
         <Grid2 container spacing={2}>
           <Grid2 display={'flex'} justifyContent={'left'} alignItems={'center'} size={12}>
             <ToolBar />

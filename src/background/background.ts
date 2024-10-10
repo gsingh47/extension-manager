@@ -48,7 +48,10 @@ type Actions = SaveGroupAction | ExtensionSwitchAction | EnableDisableAll | Mark
 
 export type ChromeExtensionInfo = chrome.management.ExtensionInfo;
 
-export const extensionToExclude = 'okldldeojendbhajegfgphmdhmfjlkka';
+export const extensionsToExclude = {
+  'okldldeojendbhajegfgphmdhmfjlkka': true, // test
+  'dnognfggomfnlohdpelnamgooacpaffi': true // prod
+};
 
 chrome.runtime.onMessage.addListener((msg: Actions, _, sendResponse) => {
   const { action, payload } = msg;

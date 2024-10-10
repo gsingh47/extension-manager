@@ -1,4 +1,3 @@
-import { Card, CardContent, Grid2, CardMedia, Switch, IconButton, Avatar, CardActions, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox, ListSubheader, Typography } from "@mui/material";
 import ExtensionIcon from "@mui/icons-material/Extension";
 import React from "react";
 import { ChromeActions, ChromeExtensionInfo, ChromeResponseMsg } from "../background/background";
@@ -12,8 +11,24 @@ import { ActionType } from "../providers/actions";
 import { TABS } from "./tabs/Tabs";
 import { SEARCH_TYPE } from "./forms/SearchForm";
 import { FavoriteExtensions } from "../providers/reducers";
+import ListItem from "@mui/material/ListItem";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Avatar from "@mui/material/Avatar";
+import ListItemText from "@mui/material/ListItemText";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Grid2 from "@mui/material/Grid2";
+import CardMedia from "@mui/material/CardMedia";
+import Switch from "@mui/material/Switch";
+import CardActions from "@mui/material/CardActions";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListSubheader from "@mui/material/ListSubheader";
 
-const resultsFoundSingularMsg = 'Found 1 matching result.';
+const resultsFoundSingularMsg = 'Found 1 matching result';
 const CardMenuItemValue = {
   UNINSTALL: 'uninstall'
 };
@@ -170,7 +185,7 @@ export const ExtensionCard: React.FC<Props & {isFav?: boolean}> = ({ data, isFav
   );
 };
 
-const NoResultsFound: React.FC<{text: string}> = ({ text }) => {
+const Messaging: React.FC<{text: string}> = ({ text }) => {
   return (
     <Typography
       width={'100%'} 
@@ -232,6 +247,14 @@ export const Extensions: React.FC = () => {
         ))
     )
   );
+
+  const finalResults = (
+    allExtensionCards?.length ? (
+      allExtensionCards
+    ) : (
+      <Messaging text="Empty" />
+    )
+  );
   
   return (state.createNewGroup || state.editGroup) ? (
     <List 
@@ -255,11 +278,11 @@ export const Extensions: React.FC = () => {
   ): (
     <Grid2 container spacing={2}>
       {filteredExtensionCards && 
-        <NoResultsFound 
-          text={searchedResultsCount === 1 ? resultsFoundSingularMsg: `Found ${searchedResultsCount} matching results.`} 
+        <Messaging 
+          text={searchedResultsCount === 1 ? resultsFoundSingularMsg: `Found ${searchedResultsCount} matching results`} 
         />
       }
-      {filteredExtensionCards ? filteredExtensionCards : allExtensionCards}
+      {filteredExtensionCards ? filteredExtensionCards : finalResults}
     </Grid2>
   );
 };
