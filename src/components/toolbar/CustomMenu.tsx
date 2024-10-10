@@ -76,13 +76,15 @@ export const CustomMenu: React.FC<Props> = ({ menuItems, iconButton, onMenuItemC
         slotProps={{
           paper: {
             style: {
-              width: '25ch',
+              width: '25ch'
             },
           },
         }}
       >
         {menuItems.map((item, index) => (
-          <MenuItem value={item.value} onClick={(event) => handleSelect(event, item.value)} key={`menu-item-${index}`}>{item.name}</MenuItem>
+          <MenuItem value={item.value} onClick={(event) => handleSelect(event, item.value)} key={`menu-item-${index}`}>
+            {item.name}
+          </MenuItem>
         ))}
       </Menu>
     </>
