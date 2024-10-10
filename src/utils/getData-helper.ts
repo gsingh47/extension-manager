@@ -1,4 +1,7 @@
+import { Dispatch } from "react";
+import { ChromeActions, ChromeResponseMsg } from "../background/background";
 import { ExtensionsDataType, FavoriteExtensions, GroupTab } from "../providers/reducers";
+import { ActionType, ExtensionActions } from "../providers/actions";
 
 export const getIconUrl = (icons: chrome.management.IconInfo[] | undefined): string | undefined => {
   return (icons && icons.length) ? icons[icons.length - 1].url : undefined;
@@ -28,13 +31,30 @@ export const getSortedExts = (
 export const getSortedGrpExts = (
   extsData: ExtensionsDataType,
   favorites: FavoriteExtensions,
-  grp?: GroupTab
+  grps: GroupTab[],
+  selectedGrp: string,
+  dispatch: Dispatch<ExtensionActions>
 ): string[] | undefined => {
-  if (grp && extsData) {
-    const selectGrpExtsData = grp.extensionIds.map(id => extsData[id]).filter(ext => ext);
-    const favExtsByGrp = favorites[grp.key];
-    
-    return getSortedExts(selectGrpExtsData, (typeof favExtsByGrp === 'object' ? favExtsByGrp : undefined));
+  if (grps.length && extsData) {
+    const index = grps.findIndex(grp => grp.key === selectedGrp);
+
+    if (~index) {
+      const grp = grps[index];
+      const selectGrpFilteredExts = grp.extensionIds.filter(id => id in extsData);
+      const selectGrpExtsData = selectGrpFilteredExts.map(id => extsData[id]);
+      const favExtsByGrp = favorites[grp.key];
+
+      // remove unmatched extensions from grp
+      if (grp.extensionIds.length !== selectGrpFilteredExts.length) {
+        grp.extensionIds = selectGrpFilteredExts;
+        grps[index] = grp;
+
+        chrome.runtime.sendMessage({action: ChromeActions.SAVE_GROUP, payload: grps})
+          .then(resp => resp === ChromeResponseMsg.SUCCESS && dispatch({type: ActionType.STORAGE_UPDATED_WITH_GRP}));
+      }
+      
+      return getSortedExts(selectGrpExtsData, (typeof favExtsByGrp === 'object' ? favExtsByGrp : undefined));
+    }
   }
 };
 

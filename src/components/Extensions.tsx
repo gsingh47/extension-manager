@@ -241,10 +241,12 @@ export const Extensions: React.FC = () => {
       getSortedGrpExts(
         state.extensionsData,
         state.favoriteExts,
-        state.createdGroupTabs.find((tab) => tab.key === state.selectedTab)
+        state.createdGroupTabs,
+        state.selectedTab,
+        dispatch
       )?.map(extId => (
-          card(extId, extensionsData[extId], isFavorite(state.selectedTab, extId, favoriteExts))
-        ))
+        card(extId, extensionsData[extId], isFavorite(state.selectedTab, extId, favoriteExts))
+      ))
     )
   );
 
