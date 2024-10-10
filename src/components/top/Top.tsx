@@ -1,11 +1,11 @@
 import React from 'react';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import StoreIcon from '@mui/icons-material/Store';
 import { useColorScheme } from '@mui/material/styles';
 import { fabCustomCss } from '../toolbar/ToolBar';
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import Switch from '@mui/material/Switch';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import StoreIcon from '@mui/icons-material/Store';
 
 const CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/';
 

@@ -1,5 +1,3 @@
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import { useExtensionsContext } from '../../providers/ExtensionsContextProvider';
 import { ActionType, ExtensionActions } from '../../providers/actions';
@@ -11,6 +9,8 @@ import Fab from '@mui/material/Fab';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export const SortByMenuItemValue = {
   FAVORITE: 'favorite',

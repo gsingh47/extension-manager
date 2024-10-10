@@ -1,13 +1,13 @@
 import React from 'react';
-import Grid2 from '@mui/material/Grid2';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { useExtensionsContext } from '../../providers/ExtensionsContextProvider';
 import { ChromeActions, ChromeResponseMsg } from '../../background/background';
 import { GroupTab } from '../../providers/reducers';
 import { ActionType } from '../../providers/actions';
 import { TABS } from '../tabs/Tabs';
 import { v4 as uuidv4 } from 'uuid';
+import Grid2 from '@mui/material/Grid2';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 export const CreateGroupForm: React.FC = () => {
   const { state, dispatch } = useExtensionsContext();

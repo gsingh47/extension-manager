@@ -1,6 +1,4 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Grid2 from '@mui/material/Grid2';
 import { ChromeExtensionInfo, extensionsToExclude, StorageKey } from '../background/background';
 import { Extensions } from './Extensions';
 import { ToolBar } from './toolbar/ToolBar';
@@ -11,6 +9,8 @@ import { useExtensionsContext } from '../providers/ExtensionsContextProvider';
 import { ActionType } from '../providers/actions';
 import { ExtensionsDataType, FavoriteExtensions } from '../providers/reducers';
 import { Top } from './top/Top';
+import Box from '@mui/material/Box';
+import Grid2 from '@mui/material/Grid2';
 
 export const ExtensionsWrapper: React.FC = () => {
   const { state, dispatch } = useExtensionsContext();

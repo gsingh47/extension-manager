@@ -1,12 +1,12 @@
-import Grid2 from '@mui/material/Grid2';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import { useExtensionsContext } from '../../providers/ExtensionsContextProvider';
 import { ActionType } from '../../providers/actions';
 import { TABS } from '../tabs/Tabs';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Grid2 from '@mui/material/Grid2';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuItem from '@mui/material/MenuItem';
 
 export const SEARCH_TYPE = {
   EXTENSION: 'extension',
