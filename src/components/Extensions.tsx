@@ -132,6 +132,7 @@ export const ExtensionCard: React.FC<Props & {isFav?: boolean}> = ({ data, isFav
               }
             });
         });
+        
     } else if (value === CardMenuItemValue.VIEW_IN_WEB_STORE) {
       chrome.tabs.create({url: data.homepageUrl});
     }
