@@ -1,23 +1,19 @@
-# Extension manager
+## Extension manager
 
-## Available Scripts
+### Available Scripts
 
 In the project directory, you can run:
 
-### `npm run dev`
+`npm run dev`
 
-Runs the app in the development mode.\
-Open chrome extension manager in dev and load `dist` folder.
+Runs the app in the development mode. Open chrome extension manager in dev and load `dist` folder.
 
-The extension will reload if you make edits.\
-You will also see any lint errors in the console.
+The extension will reload if you make edits.
 
-### `npm test`
+`npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in the interactive watch mode.
 
-### `npm run build`
+`npm run build`
 
-Builds the app for production to the `dist` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production to the `dist` folder.
