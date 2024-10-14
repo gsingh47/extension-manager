@@ -30,6 +30,7 @@ import ListSubheader from "@mui/material/ListSubheader";
 
 const resultsFoundSingularMsg = 'Found 1 matching result';
 const CardMenuItemValue = {
+  OPTIONS: 'OPTIONS',
   UNINSTALL: 'UNINSTALL',
   VIEW_IN_WEB_STORE: 'VIEW_IN_WEB_STORE'
 };
@@ -117,7 +118,13 @@ export const ExtensionCard: React.FC<Props & {isFav?: boolean}> = ({ data, isFav
   };
 
   const moreInfoIconButtonClick = (value: string) => {
-    if (value === CardMenuItemValue.UNINSTALL) {
+    if (value === CardMenuItemValue.OPTIONS) {
+      chrome.tabs.create({url: data.optionsUrl});
+
+    } else if (value === CardMenuItemValue.VIEW_IN_WEB_STORE) {
+      chrome.tabs.create({url: data.homepageUrl});
+
+    } else if (value === CardMenuItemValue.UNINSTALL) {
       chrome.management.uninstall(id)
         .then(() => {
           const updatedGrps = state.createdGroupTabs.map(grp => {
@@ -132,9 +139,6 @@ export const ExtensionCard: React.FC<Props & {isFav?: boolean}> = ({ data, isFav
               }
             });
         });
-        
-    } else if (value === CardMenuItemValue.VIEW_IN_WEB_STORE) {
-      chrome.tabs.create({url: data.homepageUrl});
     }
   };
 
@@ -178,9 +182,10 @@ export const ExtensionCard: React.FC<Props & {isFav?: boolean}> = ({ data, isFav
         <Grid2 display='flex' justifyContent='right' alignItems='center' size={6}>
           <CustomMenu 
             menuItems={[
+              data.optionsUrl ? {name: 'Options', value: CardMenuItemValue.OPTIONS} : undefined,
               {name: 'View in Chrome Web Store', value: CardMenuItemValue.VIEW_IN_WEB_STORE},
               {name: 'Uninstall', value: CardMenuItemValue.UNINSTALL}
-            ]}
+            ].filter(item => item)}
             iconButton={{
               icon: <MoreHorizIcon fontSize="small" />
             }}
